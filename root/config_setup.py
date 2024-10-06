@@ -2,9 +2,18 @@ import configparser
 import sys
 import os
 
+class CaseSensitiveConfigParser(configparser.ConfigParser):
+    """A case-sensitive ConfigParser to preserve case in keys."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, delimiters=('=', ':'), **kwargs)
+
+    def optionxform(self, optionstr):
+        """Override option transformation to keep original case."""
+        return optionstr
+
 def read_config(file_path):
     """Read the configuration file and return a ConfigParser object."""
-    config = configparser.ConfigParser(interpolation=None)
+    config = CaseSensitiveConfigParser(interpolation=None)
     config.read(file_path)
     return config
 
@@ -15,7 +24,7 @@ def write_config(config, file_path):
 
 def modify_config(config):
     """Modify the configuration as needed."""
-    runOnDownloadComplete = os.environ.get('QBT_RUN_PROGRAM')
+    runOnDownloadComplete = os.environ.get('AUTO_RUN_PROGRAM')
     if runOnDownloadComplete is not None:
         print(f'QBT_RUN_PROGRAM: {runOnDownloadComplete}')
         config.set('AutoRun', 'enabled', 'true')
