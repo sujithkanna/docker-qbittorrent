@@ -2,12 +2,19 @@
 # shellcheck shell=bash
 
 # make our folder
+
 mkdir -p /config/qBittorrent
 
+configFilePath="/config/qBittorrent/qBittorrent.conf"
+
+declare -A configMap
+
 # copy default config
-if [[ ! -f /config/qBittorrent/qBittorrent.conf ]]; then
-    cp /defaults/qBittorrent.conf /config/qBittorrent/qBittorrent.conf
+if [[ ! -f $configFilePath ]]; then
+    cp /defaults/qBittorrent.conf "$configFilePath"
 fi
+
+python3 /config_setup.py "$configFilePath"
 
 # chown download directory if currently not set to abc
 if grep -qe ' /downloads ' /proc/mounts; then
